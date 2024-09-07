@@ -24,6 +24,7 @@ mov ch, 0             ; cilindro       = 0
 mov dh, 0             ; Cabeza         = 0
 mov cl, 2             ; sector         = 2
 mov ah, 2             ; ah = 2: lee desde el disco
+
 int 0x13   		      ; interrupcion para utilizar el disco con el bios
 jmp 0x8000
 
