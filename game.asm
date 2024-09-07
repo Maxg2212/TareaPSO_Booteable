@@ -85,6 +85,7 @@ initDisplay:                        ; FUNCION INICIALIZADORA DEL MODO DE VIDEO
     ret
 
 
+;cambio random
 menuLoop:                           ; BUCLE DEL MENU PRINCIPAL      
 
     call    checkPlayerMenuAction   ; Revisa si el usuario presiono ENTER para empezar el juego
