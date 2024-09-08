@@ -53,6 +53,11 @@ inGame2  dw '-            Controles              -', 0h
 inGame3  dw '- Mover-> Flechas                   -', 0h
 inGame4  dw '- Reset-> R | Terminar -> ESC       -', 0h
 inGame5  dw '-------------------------------------', 0h
+inGame6  dw 'Flecha derecha     -', 0h
+inGame7  dw 'Flecha izquierda   -', 0h
+inGame8  dw 'Flecha arriba      -', 0h
+inGame9  dw 'Flecha abajo       -', 0h
+inGame10 dw 'Modo normal       -', 0h
 
 startProgram:                       ; FUNCION DE INICIO DEL PROGRAMA
 
@@ -203,17 +208,116 @@ drawInGameText:                     ; FUNCION QUE SE ENCARGA DE PRINTEAR EL MENU
     mov     dl, 02h               
     call    drawText
 
-    mov     bx, inGame5             ; Indica los controles para activar las diferentes habilidades (pintar, borrar)
-    inc     dh            
-    mov     dl, 02h               
-    call    drawText
-
-    mov     bx, inGame6             ; Indica en tiempo real cual habilidad esta activada
-    inc     dh            
-    mov     dl, 02h               
-    call    drawText
-
-    mov     bx, inGame10             ; Decoracion para cerrar la caja de controles
+    mov     bx, inGame5            ; Decoracion para cerrar la caja de controles
     mov     dh, 12h          
     mov     dl, 02h               
     call    drawText
+
+
+    ;Verifica la habilidad que esta en ejecucion para indicarla en pantalla
+
+    mov     bx, [rightFlag]          ; Revisa si esta en modo derecha
+    cmp     bx, 1
+    je      drawInGameTextAux
+
+    mov     bx, [leftFlag]          ; Revisa si esta en modo izquierda
+    cmp     bx, 1
+    je      drawInGameTextAux2
+
+    mov     bx, [upFlag]          ; Revisa si esta en modo arriba
+    cmp     bx, 1
+    je      drawInGameTextAux4
+
+    mov     bx, [downFlag]          ; Revisa si esta en modo abajo
+    cmp     bx, 1
+    je      drawInGameTextAux5
+    
+    jmp     drawInGameTextAux3       ; Ejecuta el modo sin habilidad en caso de no estar en ninguna de las mencionadas
+
+
+    ret
+
+drawInGameTextAux:
+
+    mov     bx, inGame6              ; Dibuja el texto en pantalla indicando que esta modo derecha     
+    mov     dl, 17h
+    mov     dh, 11h               
+    call    drawText
+    ret
+
+drawInGameTextAux2:
+
+    mov     bx, inGame7              ; Dibuja el texto en pantalla indicando que esta modo izquierda     
+    mov     dl, 17h
+    mov     dh, 11h               
+    call    drawText
+    ret
+
+drawInGameTextAux4:
+
+    mov     bx, inGame8              ; Dibuja el texto en pantalla indicando que esta modo arriba     
+    mov     dl, 17h
+    mov     dh, 11h               
+    call    drawText
+    ret
+
+drawInGameTextAux5:
+
+    mov     bx, inGame9              ; Dibuja el texto en pantalla indicando que esta modo izquierda     
+    mov     dl, 17h
+    mov     dh, 11h               
+    call    drawText
+    ret
+
+drawInGameTextAux3:
+
+    mov     bx, inGame10              ; Dibuja el texto en pantalla indicando que esta modo normal     
+    mov     dl, 17h
+    mov     dh, 11h               
+    call    drawText
+    ret
+
+drawText:                           ; FUNCION QUE SE ENCARGA DE DIBUJAR CADENAS DE CARACTERES EN PANTALLA
+
+    cmp     byte [bx],0             ; Verifica si el texto ya se termino de dibujar en pantalla
+    jz      exitRoutine             ; Vuelve al bucle principal si ya termino
+    jmp     drawChar                ; Sino sigue al siguiente caracter
+
+drawChar:                           ; FUNCION QUE SE ENCARGA DE DIBUJAR CARACTERES EN PANTALLA
+
+    push    bx                      ; Agrega el valor del caracter a la pila de dibujo
+    mov     ah, 02h                 ; Indica que se va a pintar un caracter en pantalla
+    mov     bh, 00h                 ; Indica que el caracter se va a pintar en la pantalla actual
+    int     10h                     ; Llama a la interrupcion de pintar en pantalla
+    pop     bx                      ; Saca al caracter de la pila
+
+    push    bx                      
+    mov     al, [bx]                ; Guarda el caracter actual que se va a pintar
+    mov     ah, 0ah                 ; Se mueve 10 unidades 
+    mov     bh, 00h                 
+    mov     bl, [textColor]         ; Establece el color que va a tener el caracter que se dibujara
+    mov     cx, 01h                 ; Indica que solo un caracter va a ser dibujado
+    int     10h                     ; Llama a la interrupcion de dibujo en pantalla
+    pop     bx                      
+
+    inc     bx                      ; Incrementa en 1 para leer el siguiente caracter
+    inc     dl                      
+    jmp     drawText                ; Devuelve al ciclo de dibujado principal
+
+setRandomSpawn:                     ; FUNCION QUE PERMITE SPAWNEAR AL JUGADOR EN UNA POSICION ALEATORIA  
+
+    mov ah, 02h                     ; Se setea el valor de ah necesario para que la interrupcion devuelva la hora del sistema
+    int 0x1A                        ; Se ejecuta la interrupcion que devuelve la hora del sistema
+
+    movsx ax, ch                    ; Se almacenan los minutos en un registro
+    movsx bx, dh                    ; Se almacenan los segundos en un registro
+
+    mul bx                          ; Se multiplican segundos x minutos para obtener un posicion aleatoria
+    
+    mov [player_y], bx              ; Asigna el valor calculado  a y
+    mov [temp_player_y], bx         ; Guarda la misma coordenada en el temp y
+    mov [player_x], bx              ; Asigna el valor calculado a x
+    mov [temp_player_x], bx         ; Guarda la misma coordenada en el temp x
+
+    ret                             ; Se devuelve al bucle principal
+
