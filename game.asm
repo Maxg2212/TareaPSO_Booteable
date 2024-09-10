@@ -11,7 +11,11 @@ rightFlag      dw 00h   ; Flag para indicar si el jugador esta hacia la derecha
 leftFlag      dw 00h   ; Flag para indicar si el jugador esta hacia la izquierda
 upFlag      dw 00h   ; Flag para indicar si el jugador esta hacia arriba
 downFlag      dw 00h   ; Flag para indicar si el jugador esta hacia abajo
+secondsLeft    dw 60    ; Inicializar con el número de segundos deseados (1 minuto)
+secondsunit    dw 48    ; Inicializar con las unidades  deseados (1 minuto)
+secondsdecs    dw 54    ; Inicializar con las decenas  deseados (1 minuto)
 currentColor   dw 0Ah   ; Color actual (por defecto, verde)
+clockSeconds   dw 0     ; Variable que maneja los segundos del sistema
 
 ; Constantes    -----------------------------
 width          dw 140h  ; El tamano del ancho de la pantalla 320 pixeles
@@ -20,30 +24,37 @@ height         dw 0c8H  ; El tamano del alto de la pantalla 200 pixeles
 
 gameHeight     dw 46h   ; Define el tamano del alto area de juego 100 pixeles
 gameWidth      dw 12ah  ; Define el tamano del ancho area de juego 150 pixeles
+timerPosX      dw 19h   ; Posición X para decenas del temporizador
+timerPosX2     dw 1ah   ; Posición X para unidades del temporizador
+timerPosY      dw 15h   ; Posición Y para el temporizador
 
 
 textColor      dw 150h  ; Color del texto para los menus
-name_x       dw 03h   ; Posicion en x del jugador
-name_y       dw 0ah   ; Posicion en y del jugador 
-temp_name_x  dw 03h   ; Posicion temporal en x del jugador
-temp_name_y  dw 0ah   ; Posicion temporal en y del jugador
-color_name_x dw 03h   ; Posicion casilla en x del jugador (para pintar)
-color_name_y dw 0ah   ; Posicion casilla en y del jugador (para pintar)
-name_speed   dw 06h   ; Velocidad de movimiento del jugador
-name_color   dw 0ah   ; Color por defecto del jugador (tortuga)
-name_size    dw 05h   ; DImensiones del sprite de la tortuga (5x5)
-name_dir     dw 00h   ; Ultima direccion que tuvo el jugador
+player_x       dw 03h   ; Posicion en x del jugador
+player_y       dw 0ah   ; Posicion en y del jugador 
+temp_player_x  dw 03h   ; Posicion temporal en x del jugador
+temp_player_y  dw 0ah   ; Posicion temporal en y del jugador
+color_player_x dw 03h   ; Posicion casilla en x del jugador (para pintar)
+color_player_y dw 0ah   ; Posicion casilla en y del jugador (para pintar)
+player_speed   dw 06h   ; Velocidad de movimiento del jugador
+player_color   dw 0ah   ; Color por defecto del jugador (tortuga)
+player_size    dw 05h   ; DImensiones del sprite de la tortuga (5x5)
+player_dir     dw 00h   ; Ultima direccion que tuvo el jugador
 
 ; Texto del menu principal del juego -----------------
 
-menu1    dw '           -----------------------        ', 0h
-menu2    dw '           -  MY-NAME-BOOTEABLE  -        ', 0h
-menu3    dw '           -      BIENVENIDO     -        ', 0h
-menu4    dw '           -----------------------        ', 0h
-menu5    dw '      Presione ENTER para continuar       ', 0h
+menu1    dw '      -----------------------        ', 0h
+menu2    dw '      -  MY-NAME-BOOTEABLE  -        ', 0h
+menu3    dw '      -      BIENVENIDO     -        ', 0h
+menu4    dw '      -----------------------        ', 0h
+menu5    dw '   Presione ENTER para continuar     ', 0h
 
 
-nombre1  dw '     MAX        ', 0h
+m1  dw '     #   #        ', 0h
+m2  dw '     ## ##        ', 0h
+m3  dw '     # # #        ', 0h
+m4  dw '     #   #        ', 0h
+m5  dw '     #   #        ', 0h
 
 
 ; Menu de controles In-Game -------------------------
@@ -321,3 +332,116 @@ setRandomSpawn:                     ; FUNCION QUE PERMITE SPAWNEAR AL JUGADOR EN
 
     ret                             ; Se devuelve al bucle principal
 
+renderPlayer:                        ; FUNCION QUE PERMITE DIBUJAR AL JUGADOR EN PANTALLA.
+
+    mov     cx, [player_x]           ; Posicion x donde sera dibujado
+    mov     dx, [player_y]           ; Posicion y donde sera dibujado
+    jmp     renderPlayerAux   
+
+renderPlayerAux:                     ; FUNCION COMPLEMENTARIA QUE PERMITE DIBUJAR AL JUGADOR EN PANTALLA.
+
+    mov    ah, 0ch                   ; Indica que se va a dibujar un pixel en pantalla
+    mov    al, [player_color]        ; Indica el color del pixel (color del jugador)
+    mov    bh, 00h                   ; Indica en que pagina lo va a dibujar (predeterminada)
+    int    10h                       ; Llama a la interrupcion para dibujar en pantalla
+    inc    cx                        ; Incremente en 1 el cx
+    mov    ax, cx                   
+    sub    ax, [player_x]            ; Resta 1 a la posicion del jugador para dibujar el siguiente pixel del sprite (dibujando anchura)
+    cmp    ax, [player_size]         ; Verifica si el ax es mas grande que el tamano del jugador
+    jng    renderPlayerAux           ; Si aun no es mas grande sigue dibujando la siguiente columna
+    jmp    renderPlayerAux2          ; Sino salta a la siguiente funcion de dibujo (dibujar altura del sprite)
+
+renderPlayerAux2:                    ; FUNCION COMPLEMENTARIA QUE PERMITE DIBUJAR AL JUGADOR EN PANTALLA.
+
+    mov     cx, [player_x]           ; Restablece el valor de las columnas
+    inc     dx                       ; Aumenta en la fila
+    mov     ax, dx                  
+    sub     ax, [player_y]           ; Resta 1 a la posicion del jugador para dibujar el siguiente pixel del sprite (dibujando altura)
+    cmp     ax, [player_size]        ; Verifica si el ax es mas grande que el tamano del jugador
+    jng     renderPlayerAux          ; Si aun no es mas grande sigue dibujando la siguiente fila
+    ret                              ; Sino vuelve al bucle principal
+
+makeMovements:                      ; FUNCION QUE SE ENCARGA DE DETECTAR LOS INPUTS DE TECLADO Y EJECUTAR LAS ACCIONES QUE CORRESPONDAN
+
+    mov     ah, 01h                 ; Indica que se va a leer una entrada de teclado
+    int     16h                     ; Ejecuta la interrupcion de teclado
+
+    jz      exitRoutine             ; Si no se detecta ninguna tecla vuelve al bucle principal
+
+    mov     ah, 00h                 ; Detecta que se presiono una tecla
+    int     16h                     ; Ejecuta la interrupcion para saber el valor de la tecla presionada
+
+    cmp     ah, 48h                 ; Si la tecla es : Flecha arriba
+    je      playerUp                ; Mueve al jugador hacia arriba
+
+    
+    cmp     ah, 50h                 ; Si la tecla es : Flecha abajo
+    je      playerDown              ; Mueve al jugador hacia abajo
+
+    cmp     ah, 4dh                 ; Si la tecla es : Flecha derecha
+    je      playerRight             ; Mueve al jugador hacia derecha
+
+    cmp     ah, 4bh                 ; Si la tecla es : Flecha izquierda
+    je      playerLeft              ; Mueve al jugador hacia izquierda
+
+    cmp     ah, 13h                 ; Si la tecla es : r
+    je      resetGame               ; Reinicia el juego
+
+    cmp     al, 1Bh                 ; Si la tecla es : esc
+    je      startProgram            ; EL juego termina y vuelve al menu principa
+
+
+    ret
+
+playerUp:
+
+playerDown:
+
+playerRight:
+
+playerLeft:
+
+
+
+
+paintLoop:                          ; BUCLE QUE SE ENCARGA DE PINTAR LA CASILLA DEL COLOR CORRESPONDIENTE (FILAS)
+
+    mov     ah, 0ch                 ; Indica que se va a dibujar un pixel en pantalla
+    mov     al, [currentColor]      ; Indica el color del pixel (color segun movimiento) 
+    mov     bh, 00h                 ; Indica en que pagina lo va a dibujar (predeterminada)
+    int     10h                     ; Llama a la interrupcion para dibujar en pantalla
+    inc     cx                      ; Incrementa en 1 el cx 
+    mov     ax, cx                  
+    sub     ax, [color_player_x]    ; Resta 1 a la posicion del jugador para dibujar el siguiente pixel del sprite (dibujando anchura)
+    cmp     ax, [player_size]       ; Verifica si el ax es mas grande que el tamano del jugador
+    jng     paintLoop               ; Si aun no es mas grande sigue dibujando la siguiente columna
+    jmp     paintLoop2              ; Sino salta a la siguiente funcion de dibujo (dibujar altura del sprite)
+
+paintLoop2:                         ; BUCLE QUE SE ENCARGA DE PINTAR LA CASILLA DEL COLOR CORRESPONDIENTE (COLUMNAS)
+
+    mov     cx, [color_player_x]    ; Restablece el valor de las columnas
+    inc     dx                      ; Aumenta en la fila
+    mov     ax, dx                  
+    sub     ax, [color_player_y]    ; Resta 1 a la posicion del jugador para dibujar el siguiente pixel del sprite (dibujando altura)
+    cmp     ax, [player_size]       ; Verifica si el ax es mas grande que el tamano del jugador
+    jng     paintLoop               ; Si aun no es mas grande sigue dibujando la siguiente fila
+
+    ret                             ; Sino vuelve al bucle principal 
+
+resetGame:                          ; FUNCION QUE REINICIA EL JUEGO 
+
+    call    clearCounter            ; Llama al reiniciador del temporizador y flags
+
+    call    clearScreen             ; Llama al limpiador de pantalla 
+
+    jmp     startGame               ; Vuelve a llamar al inicio de juego
+
+clearCounter:                       ; FUNCION QUE SE ENCARGA DE REINICIAR EL TEMPORIZADOR Y LAS FLAGS
+
+    mov     word [secondsLeft], 60  ; Reinicia los segundos restantes a 60 (1 mins)
+    mov     word [secondsdecs], 54  ; Reinicia las decenas  restantes a 6 
+    mov     word [secondsunit], 48  ; Reinicia las unidades restantes a 0 
+
+exitRoutine:                        ; FUNCION QUE SE VOLVER A LOS CICLOS PRINCIPALES
+
+    ret                             ; Permite salir de una rutina y vuelve al ciclo principal
