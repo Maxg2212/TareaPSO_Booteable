@@ -50,11 +50,22 @@ menu4    dw '      -----------------------        ', 0h
 menu5    dw '   Presione ENTER para continuar     ', 0h
 
 
-m1  dw '     #   #        ', 0h
-m2  dw '     ## ##        ', 0h
-m3  dw '     # # #        ', 0h
-m4  dw '     #   #        ', 0h
-m5  dw '     #   #        ', 0h
+m1  dw '#  #', 0h
+m2  dw '####', 0h
+m3  dw '####', 0h
+m4  dw '#  #', 0h
+
+
+a1  dw '####', 0h
+a2  dw '#  #', 0h
+a3  dw '####', 0h
+a4  dw '#  #', 0h
+
+
+x1  dw '#  #', 0h
+x2  dw ' ## ', 0h
+x3  dw ' ## ', 0h
+x4  dw '#  #', 0h
 
 
 ; Menu de controles In-Game -------------------------
@@ -199,30 +210,69 @@ drawInGameText:                     ; FUNCION QUE SE ENCARGA DE PRINTEAR EL MENU
 
     mov     bx, [textColor]         ; Establece el color del texto para pintar el texto In Game
 
-    mov     bx, inGame1             ; Selecciona el texto que quiere escribir
-    mov     dh, 0ch                 ; Selecciona la coordenada y en pixeles donde se escribira
+    mov     bx, m1             ; Selecciona el texto que quiere escribir
+    mov     dh, 0eh                 ; Selecciona la coordenada y en pixeles donde se escribira
     mov     dl, 02h                 ; Selecciona la coordenada X en pixeles donde se escribira               
     call    drawText                ; Llama a la funcion que lo coloca en pantalla
 
-    mov     bx, inGame2             ; Texto que indica el nivel y el titulo de controles   
+    mov     bx, m2             ; Texto que indica el nivel y el titulo de controles   
     inc     dh            
     mov     dl, 02h               
     call    drawText   
 
-    mov     bx, inGame3             ; Indica los controles de movimiento del juego      
+    mov     bx, m3             ; Indica los controles de movimiento del juego      
     inc     dh            
     mov     dl, 02h               
     call    drawText
 
-    mov     bx, inGame4             ; Indica los controles para reiniciar y volver a menu principal
+    mov     bx, m4             ; Indica los controles para reiniciar y volver a menu principal
     inc     dh            
     mov     dl, 02h               
     call    drawText
 
-    mov     bx, inGame5            ; Decoracion para cerrar la caja de controles
-    mov     dh, 12h          
-    mov     dl, 02h               
+
+    mov     bx, a1             ; Selecciona el texto que quiere escribir
+    mov     dh, 0eh                 ; Selecciona la coordenada y en pixeles donde se escribira
+    mov     dl, 07h                 ; Selecciona la coordenada X en pixeles donde se escribira               
+    call    drawText                ; Llama a la funcion que lo coloca en pantalla
+
+    mov     bx, a2             ; Texto que indica el nivel y el titulo de controles   
+    inc     dh            
+    mov     dl, 07h               
+    call    drawText   
+
+    mov     bx, a3             ; Indica los controles de movimiento del juego      
+    inc     dh            
+    mov     dl, 07h               
     call    drawText
+
+    mov     bx, a4             ; Indica los controles para reiniciar y volver a menu principal
+    inc     dh            
+    mov     dl, 07h               
+    call    drawText
+
+
+
+    mov     bx, x1             ; Selecciona el texto que quiere escribir
+    mov     dh, 0eh                 ; Selecciona la coordenada y en pixeles donde se escribira
+    mov     dl, 0ch                 ; Selecciona la coordenada X en pixeles donde se escribira               
+    call    drawText                ; Llama a la funcion que lo coloca en pantalla
+
+    mov     bx, x2             ; Texto que indica el nivel y el titulo de controles   
+    inc     dh            
+    mov     dl, 0ch               
+    call    drawText   
+
+    mov     bx, x3             ; Indica los controles de movimiento del juego      
+    inc     dh            
+    mov     dl, 0ch               
+    call    drawText
+
+    mov     bx, x4             ; Indica los controles para reiniciar y volver a menu principal
+    inc     dh            
+    mov     dl, 0ch               
+    call    drawText
+
 
 
     ;Verifica la habilidad que esta en ejecucion para indicarla en pantalla
