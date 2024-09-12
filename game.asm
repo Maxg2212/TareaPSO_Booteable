@@ -711,7 +711,7 @@ playerLeft:
     call clearScreen
 
     mov     bx, ml1             ; Selecciona el texto que quiere escribir
-    mov     dh, 00h                 ; Selecciona la coordenada y en pixeles donde se escribira
+    mov     dh, 0eh                 ; Selecciona la coordenada y en pixeles donde se escribira
     mov     dl, 02h                 ; Selecciona la coordenada X en pixeles donde se escribira               
     call    drawText                ; Llama a la funcion que lo coloca en pantalla
 
@@ -732,7 +732,7 @@ playerLeft:
 
 
     mov     bx, al1             ; Selecciona el texto que quiere escribir
-    mov     dh, 05h                 ; Selecciona la coordenada y en pixeles donde se escribira
+    mov     dh, 09h                 ; Selecciona la coordenada y en pixeles donde se escribira
     mov     dl, 02h                 ; Selecciona la coordenada X en pixeles donde se escribira               
     call    drawText                ; Llama a la funcion que lo coloca en pantalla
 
@@ -754,7 +754,7 @@ playerLeft:
 
 
     mov     bx, xl1             ; Selecciona el texto que quiere escribir
-    mov     dh, 0ah                 ; Selecciona la coordenada y en pixeles donde se escribira
+    mov     dh, 04h                 ; Selecciona la coordenada y en pixeles donde se escribira
     mov     dl, 02h                 ; Selecciona la coordenada X en pixeles donde se escribira               
     call    drawText                ; Llama a la funcion que lo coloca en pantalla
 
