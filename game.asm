@@ -157,8 +157,6 @@ startGame:                          ;FUNCION DE INICIO DE JUEGO
 
     call    clearScreen             ; Llama al limpiador de pantalla
 
-    ;call    drawInGameText          ; Dibuja el menu de controles dentro del juego
-
     jmp     gameLoop                ; Salta al bucle de juego principal
 
 
@@ -183,11 +181,8 @@ menuLoop:                           ; BUCLE DEL MENU PRINCIPAL
 
 gameLoop:                           ; BUCLE PRINCIPAL DEL JUEGO
 
-    ;call    drawInGameText          ; Dibuja el menu de controles dentro del juego principal
-
     call    makeMovements           ; Revisa contanstemente las teclas para detectar cualquier movimiento del jugador en juego 
 
-    ;call    renderPlayer            ; Permite dibujar al jugador en la posicion donde se encuentre
 
     jmp     gameLoop                ; Se llama asi misma hasta que ocurra alguna accion por parte del usuario
 
@@ -477,17 +472,18 @@ makeMovements:                      ; FUNCION QUE SE ENCARGA DE DETECTAR LOS INP
     int     16h                     ; Ejecuta la interrupcion para saber el valor de la tecla presionada
 
     cmp     ah, 48h                 ; Si la tecla es : Flecha arriba
-    je      playerUp                ; Mueve al jugador hacia arriba
+    je      playerUp                ; Traslada el texto 180 grados hacia arriba
 
     
     cmp     ah, 50h                 ; Si la tecla es : Flecha abajo
-    je      playerDown              ; Mueve al jugador hacia abajo
+    je      playerDown              ; Traslada el texto 180 grados hacia abajo
+
 
     cmp     ah, 4dh                 ; Si la tecla es : Flecha derecha
-    je      playerRight             ; Mueve al jugador hacia derecha
+    je      playerRight             ; Rota el texto 90 grados hacia la derecha
 
     cmp     ah, 4bh                 ; Si la tecla es : Flecha izquierda
-    je      playerLeft              ; Mueve al jugador hacia izquierda
+    je      playerLeft              ; Rota el texto 90 grados hacia la izquierda
 
     cmp     ah, 13h                 ; Si la tecla es : r
     je      resetGame               ; Reinicia el juego
@@ -504,42 +500,42 @@ playerUp:
     mov     bx, [textColor]         ; Establece el color del texto para pintar el texto In Game
 
     mov     bx, m1             ; Selecciona el texto que quiere escribir
-    mov     dh, 0eh                 ; Selecciona la coordenada y en pixeles donde se escribira
+    mov     dh, 0ah                 ; Selecciona la coordenada y en pixeles donde se escribira
     mov     dl, 02h                 ; Selecciona la coordenada X en pixeles donde se escribira               
     call    drawText                ; Llama a la funcion que lo coloca en pantalla
 
-    mov     bx, m2             ; Texto que indica el nivel y el titulo de controles   
+    mov     bx, m2             ; Selecciona el texto que quiere escribir   
     inc     dh            
     mov     dl, 02h               
     call    drawText   
 
-    mov     bx, m3             ; Indica los controles de movimiento del juego      
+    mov     bx, m3             ; Selecciona el texto que quiere escribir      
     inc     dh            
     mov     dl, 02h               
     call    drawText
 
-    mov     bx, m4            ; Indica los controles para reiniciar y volver a menu principal
+    mov     bx, m4            ; Selecciona el texto que quiere escribir
     inc     dh            
     mov     dl, 02h               
     call    drawText
 
 
     mov     bx, a1             ; Selecciona el texto que quiere escribir
-    mov     dh, 0eh                 ; Selecciona la coordenada y en pixeles donde se escribira
+    mov     dh, 0ah                 ; Selecciona la coordenada y en pixeles donde se escribira
     mov     dl, 08h                 ; Selecciona la coordenada X en pixeles donde se escribira               
     call    drawText                ; Llama a la funcion que lo coloca en pantalla
 
-    mov     bx, a2             ; Texto que indica el nivel y el titulo de controles   
+    mov     bx, a2             ; Selecciona el texto que quiere escribir   
     inc     dh            
     mov     dl, 08h               
     call    drawText   
 
-    mov     bx, a3            ; Indica los controles de movimiento del juego      
+    mov     bx, a3            ; Selecciona el texto que quiere escribir      
     inc     dh            
     mov     dl, 08h               
     call    drawText
 
-    mov     bx, a4             ; Indica los controles para reiniciar y volver a menu principal
+    mov     bx, a4             ; Selecciona el texto que quiere escribir
     inc     dh            
     mov     dl, 08h               
     call    drawText
@@ -547,21 +543,21 @@ playerUp:
 
 
     mov     bx, x1             ; Selecciona el texto que quiere escribir
-    mov     dh, 0eh                 ; Selecciona la coordenada y en pixeles donde se escribira
+    mov     dh, 0ah                 ; Selecciona la coordenada y en pixeles donde se escribira
     mov     dl, 0dh                 ; Selecciona la coordenada X en pixeles donde se escribira               
     call    drawText                ; Llama a la funcion que lo coloca en pantalla
 
-    mov     bx, x2             ; Texto que indica el nivel y el titulo de controles   
+    mov     bx, x2             ; Selecciona el texto que quiere escribir   
     inc     dh            
     mov     dl, 0dh               
     call    drawText   
 
-    mov     bx, x3             ; Indica los controles de movimiento del juego      
+    mov     bx, x3             ; Selecciona el texto que quiere escribir    
     inc     dh            
     mov     dl, 0dh               
     call    drawText
 
-    mov     bx, x4            ; Indica los controles para reiniciar y volver a menu principal
+    mov     bx, x4            ; Selecciona el texto que quiere escribir
     inc     dh            
     mov     dl, 0dh               
     call    drawText
@@ -573,42 +569,42 @@ playerDown:
     call clearScreen
 
     mov     bx, md1             ; Selecciona el texto que quiere escribir
-    mov     dh, 0eh                 ; Selecciona la coordenada y en pixeles donde se escribira
+    mov     dh, 0ah                 ; Selecciona la coordenada y en pixeles donde se escribira
     mov     dl, 02h                 ; Selecciona la coordenada X en pixeles donde se escribira               
     call    drawText                ; Llama a la funcion que lo coloca en pantalla
 
-    mov     bx, md2             ; Texto que indica el nivel y el titulo de controles   
+    mov     bx, md2             ; Selecciona el texto que quiere escribir  
     inc     dh            
     mov     dl, 02h               
     call    drawText   
 
-    mov     bx, md3             ; Indica los controles de movimiento del juego      
+    mov     bx, md3             ; Selecciona el texto que quiere escribir    
     inc     dh            
     mov     dl, 02h               
     call    drawText
 
-    mov     bx, md4            ; Indica los controles para reiniciar y volver a menu principal
+    mov     bx, md4            ; Selecciona el texto que quiere escribir
     inc     dh            
     mov     dl, 02h               
     call    drawText
 
 
     mov     bx, ad1             ; Selecciona el texto que quiere escribir
-    mov     dh, 0eh                 ; Selecciona la coordenada y en pixeles donde se escribira
+    mov     dh, 0ah                 ; Selecciona la coordenada y en pixeles donde se escribira
     mov     dl, 08h                 ; Selecciona la coordenada X en pixeles donde se escribira               
     call    drawText                ; Llama a la funcion que lo coloca en pantalla
 
-    mov     bx, ad2             ; Texto que indica el nivel y el titulo de controles   
+    mov     bx, ad2             ; Selecciona el texto que quiere escribir
     inc     dh            
     mov     dl, 08h               
     call    drawText   
 
-    mov     bx, ad3            ; Indica los controles de movimiento del juego      
+    mov     bx, ad3            ; Selecciona el texto que quiere escribir    
     inc     dh            
     mov     dl, 08h               
     call    drawText
 
-    mov     bx, ad4             ; Indica los controles para reiniciar y volver a menu principal
+    mov     bx, ad4             ; Selecciona el texto que quiere escribir
     inc     dh            
     mov     dl, 08h               
     call    drawText
@@ -616,21 +612,21 @@ playerDown:
 
 
     mov     bx, xd1             ; Selecciona el texto que quiere escribir
-    mov     dh, 0eh                 ; Selecciona la coordenada y en pixeles donde se escribira
+    mov     dh, 0ah                 ; Selecciona la coordenada y en pixeles donde se escribira
     mov     dl, 0dh                 ; Selecciona la coordenada X en pixeles donde se escribira               
     call    drawText                ; Llama a la funcion que lo coloca en pantalla
 
-    mov     bx, xd2             ; Texto que indica el nivel y el titulo de controles   
+    mov     bx, xd2             ; Selecciona el texto que quiere escribir
     inc     dh            
     mov     dl, 0dh               
     call    drawText   
 
-    mov     bx, xd3             ; Indica los controles de movimiento del juego      
+    mov     bx, xd3             ; Selecciona el texto que quiere escribir  
     inc     dh            
     mov     dl, 0dh               
     call    drawText
 
-    mov     bx, xd4            ; Indica los controles para reiniciar y volver a menu principal
+    mov     bx, xd4            ; Selecciona el texto que quiere escribir
     inc     dh            
     mov     dl, 0dh               
     call    drawText
@@ -642,42 +638,42 @@ playerRight:
     call clearScreen
 
     mov     bx, mr1             ; Selecciona el texto que quiere escribir
-    mov     dh, 00h                 ; Selecciona la coordenada y en pixeles donde se escribira
+    mov     dh, 0ah                 ; Selecciona la coordenada y en pixeles donde se escribira
     mov     dl, 02h                 ; Selecciona la coordenada X en pixeles donde se escribira               
     call    drawText                ; Llama a la funcion que lo coloca en pantalla
 
-    mov     bx, mr2             ; Texto que indica el nivel y el titulo de controles   
+    mov     bx, mr2             ; Selecciona el texto que quiere escribir
     inc     dh            
     mov     dl, 02h               
     call    drawText   
 
-    mov     bx, mr3             ; Indica los controles de movimiento del juego      
+    mov     bx, mr3             ; Selecciona el texto que quiere escribir     
     inc     dh            
     mov     dl, 02h               
     call    drawText
 
-    mov     bx, mr4            ; Indica los controles para reiniciar y volver a menu principal
+    mov     bx, mr4            ; Selecciona el texto que quiere escribir
     inc     dh            
     mov     dl, 02h               
     call    drawText
 
 
     mov     bx, ar1             ; Selecciona el texto que quiere escribir
-    mov     dh, 05h                 ; Selecciona la coordenada y en pixeles donde se escribira
+    mov     dh, 0fh                 ; Selecciona la coordenada y en pixeles donde se escribira
     mov     dl, 02h                 ; Selecciona la coordenada X en pixeles donde se escribira               
     call    drawText                ; Llama a la funcion que lo coloca en pantalla
 
-    mov     bx, ar2             ; Texto que indica el nivel y el titulo de controles   
+    mov     bx, ar2            ; Selecciona el texto que quiere escribirs   
     inc     dh            
     mov     dl, 02h           
     call    drawText   
 
-    mov     bx, ar3            ; Indica los controles de movimiento del juego      
+    mov     bx, ar3            ; Selecciona el texto que quiere escribir  
     inc     dh            
     mov     dl, 02h            
     call    drawText
 
-    mov     bx, ar4             ; Indica los controles para reiniciar y volver a menu principal
+    mov     bx, ar4             ; Selecciona el texto que quiere escribir
     inc     dh            
     mov     dl, 02h       
     call    drawText
@@ -685,21 +681,21 @@ playerRight:
 
 
     mov     bx, xr1             ; Selecciona el texto que quiere escribir
-    mov     dh, 0ah                 ; Selecciona la coordenada y en pixeles donde se escribira
+    mov     dh, 014h                 ; Selecciona la coordenada y en pixeles donde se escribira
     mov     dl, 02h                 ; Selecciona la coordenada X en pixeles donde se escribira               
     call    drawText                ; Llama a la funcion que lo coloca en pantalla
 
-    mov     bx, xr2             ; Texto que indica el nivel y el titulo de controles   
+    mov     bx, xr2             ; Selecciona el texto que quiere escribir
     inc     dh            
     mov     dl, 02h        
     call    drawText   
 
-    mov     bx, xr3             ; Indica los controles de movimiento del juego      
+    mov     bx, xr3             ; Selecciona el texto que quiere escribir    
     inc     dh            
     mov     dl, 02h              
     call    drawText
 
-    mov     bx, xr4            ; Indica los controles para reiniciar y volver a menu principal
+    mov     bx, xr4            ; Selecciona el texto que quiere escribir
     inc     dh            
     mov     dl, 02h              
     call    drawText
@@ -711,42 +707,42 @@ playerLeft:
     call clearScreen
 
     mov     bx, ml1             ; Selecciona el texto que quiere escribir
-    mov     dh, 0eh                 ; Selecciona la coordenada y en pixeles donde se escribira
+    mov     dh, 0ah                 ; Selecciona la coordenada y en pixeles donde se escribira
     mov     dl, 02h                 ; Selecciona la coordenada X en pixeles donde se escribira               
     call    drawText                ; Llama a la funcion que lo coloca en pantalla
 
-    mov     bx, ml2             ; Texto que indica el nivel y el titulo de controles   
+    mov     bx, ml2             ; Selecciona el texto que quiere escribir
     inc     dh            
     mov     dl, 02h               
     call    drawText   
 
-    mov     bx, ml3             ; Indica los controles de movimiento del juego      
+    mov     bx, ml3            ; Selecciona el texto que quiere escribir   
     inc     dh            
     mov     dl, 02h               
     call    drawText
 
-    mov     bx, ml4            ; Indica los controles para reiniciar y volver a menu principal
+    mov     bx, ml4            ; Selecciona el texto que quiere escribir
     inc     dh            
     mov     dl, 02h               
     call    drawText
 
 
     mov     bx, al1             ; Selecciona el texto que quiere escribir
-    mov     dh, 09h                 ; Selecciona la coordenada y en pixeles donde se escribira
+    mov     dh, 05h                 ; Selecciona la coordenada y en pixeles donde se escribira
     mov     dl, 02h                 ; Selecciona la coordenada X en pixeles donde se escribira               
     call    drawText                ; Llama a la funcion que lo coloca en pantalla
 
-    mov     bx, al2             ; Texto que indica el nivel y el titulo de controles   
+    mov     bx, al2             ; Selecciona el texto que quiere escribir 
     inc     dh            
     mov     dl, 02h           
     call    drawText   
 
-    mov     bx, al3            ; Indica los controles de movimiento del juego      
+    mov     bx, al3            ; Selecciona el texto que quiere escribir    
     inc     dh            
     mov     dl, 02h            
     call    drawText
 
-    mov     bx, al4             ; Indica los controles para reiniciar y volver a menu principal
+    mov     bx, al4             ; Selecciona el texto que quiere escribir
     inc     dh            
     mov     dl, 02h       
     call    drawText
@@ -754,21 +750,21 @@ playerLeft:
 
 
     mov     bx, xl1             ; Selecciona el texto que quiere escribir
-    mov     dh, 04h                 ; Selecciona la coordenada y en pixeles donde se escribira
+    mov     dh, 00h                 ; Selecciona la coordenada y en pixeles donde se escribira
     mov     dl, 02h                 ; Selecciona la coordenada X en pixeles donde se escribira               
     call    drawText                ; Llama a la funcion que lo coloca en pantalla
 
-    mov     bx, xl2             ; Texto que indica el nivel y el titulo de controles   
+    mov     bx, xl2             ; Selecciona el texto que quiere escribir 
     inc     dh            
     mov     dl, 02h        
     call    drawText   
 
-    mov     bx, xl3             ; Indica los controles de movimiento del juego      
+    mov     bx, xl3             ; Selecciona el texto que quiere escribir   
     inc     dh            
     mov     dl, 02h              
     call    drawText
 
-    mov     bx, xl4            ; Indica los controles para reiniciar y volver a menu principal
+    mov     bx, xl4            ; Selecciona el texto que quiere escribir
     inc     dh            
     mov     dl, 02h              
     call    drawText
